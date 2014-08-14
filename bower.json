@@ -1,0 +1,8 @@
+{
+  "name": "streams-js",
+  "dependencies": {
+    "underscore": "latest",
+    "underscore-contrib": "latest",
+    "sass-bootstrap": "latest"
+  }
+}
