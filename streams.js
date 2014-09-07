@@ -211,14 +211,14 @@ var integral = function (integrand, initialValue, deltaT) {
   return int();
 };
 
-var benchmarkRun = function (f /*, arguments */) {
+var benchmarkRun = function (f) {
   var start,
       end,
       timeMessage,
       fResult;
 
   start = Date.now();
-  fResult = f.apply(f, _.rest(arguments));
+  f();
   end = Date.now();
 
   return end - start;

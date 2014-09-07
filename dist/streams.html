@@ -111,7 +111,7 @@
           </ul>
       </ul>
       <p>
-        Since we can see the repeating pattern and we understand "..." to mean "continue this pattern indefinitely," we can express the infinite set of natural numbers in the finite space above. Could we make a computer "think" similarly in order to build the natural numbers in a computer's finite memory? Or, could we do the next best thing and make the computer give us any natural number on demand, thus presenting the illusion of having all the natural numbers in memory?
+        Since we can see the repeating pattern and we understand "..." to mean "continue this pattern indefinitely," we can express the infinite set of natural numbers in the finite space above (assuming we already have the number 1 and addition). Could we make a computer "think" similarly in order to express the natural numbers in a computer's finite memory? Or, could we do the next best thing and make the computer give us any natural number on demand, thus presenting the illusion of having all the natural numbers in memory?
       </p>
     </section>
 
@@ -175,7 +175,7 @@
       </p>
 
       <p>
-        To avoid getting into the JavaScript language, we'll use a library that provides functions for building, transversing, selecting, and transforming collections and objects. Functions that look like _.<em>functionName</em> (i.e., a succession of underscore, period, and function name) come from this library.
+      To avoid getting into the JavaScript language, we'll use a library called <a href="http://underscorejs.org/">Underscore.js</a> that provides functions for building, transversing, selecting, and transforming collections and objects. Functions that look like _.<em>functionName</em> (i.e., a succession of underscore, period, and function name) come from this library.
       </p>
     </section>
 
@@ -316,11 +316,19 @@
         </div>
 
         <p>
-          There is a difference compared to lists, though. The tail of a stream is a function to compute the next element and tail of the stream. And once we've computed a given tail, there is no reason to compute it again. For example, if we ask for the second element of the stream, we have to compute the tail of the stream. If we ask for the second element again, then there is no reason to repeat the computation of that tail. Also, if we have a stream representing the Fibonacci numbers and we compute the second Fibonacci number, there is no reason to compute it again when computing the third and the fourth Fibonacci numbers.
+          Streams are not lists, though: the tail of a stream is a <em>function</em> to compute the first element and the tail of the rest of stream and once we've computed a given tail, there is no reason to compute it again. For example, if we ask for the second element of the stream, we have to compute the tail of the stream. If we ask for the second element again, then there is no reason to repeat the computation of that tail. Also, if we have a stream representing the Fibonacci numbers and we compute the second Fibonacci number, there is no reason to compute it again when computing the third and the fourth Fibonacci numbers.
         </p>
 
         <p>
-          Therefore, let's introduce a function <span class="new-code-ref">memoProc</span> (as in "memoize procedure") that will accept a function (call it "f") and yield another function ("g"). That is, when g is called the first time, the result of calling f (our actual function of interest) is computed and stored and returned. When g is called subsequently, the stored result of calling f is returned; f is not called subsequently.
+          Therefore, let's introduce a function <span class="new-code-ref">memoProc</span> (as in "memoize procedure") that will accept a function (call it "f") and yield another function ("g") such that:
+          <ul>
+            <li>
+              when g is called the first time, the result of calling f (our actual function of interest) is computed and stored and returned, and
+            </li>
+            <li>
+              when g is called subsequently, the stored result of calling f is returned (and no additional computation is done).
+            </li>
+          </ul>
         </p>
 
         <div class="code-listing">
@@ -448,7 +456,7 @@
         </ul>
 
         <p>
-          Let's make a helper function that expresses the idea of making this list with two elements (a number and a similar list).
+          Let's make a generator function that expresses the idea of making the above list of two elements (a number and a similar list).
         </p>
 
         <div class="code-listing">
@@ -668,7 +676,7 @@
       </h2>
 
       <p>
-        Let's consider two methods of finding the second prime between 10,000 and 100,000: an imperative method and a stream-processing method.
+        Let's consider two methods of finding the second prime between 10,000 and 100,000: an imperative method and a stream-processing method. The stream-processing method will use functions to express our computational procedure, allowing us to write code that is closer to the level of the problem and of our thinking. Such a style could be very inefficient for the computer to execute but the use of streams instead of lists, while not as efficient as an imperative method, will hold the inefficiency to a level that may be acceptable for a given application.
       </p>
 
       <h3>
@@ -733,6 +741,10 @@
         <span class="code return-value"><span class="return-value-prefix">yields:</span>10009</span>
       </div>
 
+      <h4>
+        Reflection
+      </h4>
+
       <p>
         On one hand, the language gives us all the machinery we need. Additionally, nthPrimeInInterval executes quickly; performance improvements will have to come from better prime-checking algorithms. (This algorithm is O(sqrt(n)) but we could use an O(log(n)) algorithm.) If speed or power consumption were high priorities for a program, then something like this method would likely be the best choice.
       </p>
@@ -780,11 +792,11 @@
       </div>
 
       <h4>
-        Versus the above imperative method:
+        Reflection
       </h4>
 
       <p>
-        Here we have separated and abstracted away enumeration, filtering, and iteration. We are telling the computer what we want to do accomplish instead of the steps to take that we know will accomplish our goal &mdash; this solution is closer to the level of the problem and our thinking.
+        Here we have separated and abstracted away enumeration, filtering, and iteration. We are telling the computer what we want to accomplish instead of the steps to take that we know will accomplish our goal &mdash; this solution is closer to the level of the problem and our thinking.
       </p>
 
       <p>
@@ -812,7 +824,7 @@
       </p>
 
       <h4>
-        Versus lists:
+        Versus lists
       </h4>
 
       <p>
@@ -911,14 +923,14 @@ var integralOfExp = integral(expStream, 0, 0.01);</pre>
         I used the following code to time the execution of the procedures above:
       </p>
       <div class="code-listing">
-        <pre>var benchmarkRun = function (f /*, arguments */) {
+        <pre>var benchmarkRun = function (f) {
   var start,
       end,
       timeMessage,
       fResult;
 
   start = Date.now();
-  fResult = f.apply(f, _.rest(arguments));
+  f();
   end = Date.now();
 
   return end - start;
@@ -4586,14 +4598,14 @@ var integral = function (integrand, initialValue, deltaT) {
   return int();
 };
 
-var benchmarkRun = function (f /*, arguments */) {
+var benchmarkRun = function (f) {
   var start,
       end,
       timeMessage,
       fResult;
 
   start = Date.now();
-  fResult = f.apply(f, _.rest(arguments));
+  f();
   end = Date.now();
 
   return end - start;
